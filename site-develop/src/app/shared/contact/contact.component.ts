@@ -1,22 +1,29 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { Contato } from '../../interfaces/contato';
+import { SendMailService } from '../services/send-mail.service';
 
 @Component({
   selector: 'app-contact',
   templateUrl: './contact.component.html',
   styleUrls: ['./contact.component.scss']
 })
+
+
 export class ContactComponent implements OnInit {
   contactForm: FormGroup;
   submitted = false;
   formInvalid = false;
   errorMessage = '';
   sendSuccess = false;
+  contato: Contato;
+
 
   constructor(
     private spinner: NgxSpinnerService,
     private formBuilder: FormBuilder,
+    private service: SendMailService
   ) { }
 
   ngOnInit(): void {
@@ -28,7 +35,10 @@ export class ContactComponent implements OnInit {
     });
   }
 
+
+
   get f() { return this.contactForm.controls; }
+
 
   onSubmit() {
     this.spinner.show();
@@ -47,6 +57,7 @@ export class ContactComponent implements OnInit {
       console.log(this.contactForm.value);
       return;
     }
+    console.log(this.contactForm.value);
 
     this.contactForm.reset();
 
@@ -55,6 +66,19 @@ export class ContactComponent implements OnInit {
     }, 500);
 
     this.sendSuccess = true;
+
+
+
+    this.service.criar(this.contactForm.value).subscribe(
+      success => {
+        console.log('Sucesso')
+      },
+      error => {
+        console.log('erro')
+      }
+
+    )
+
   }
 
 }
